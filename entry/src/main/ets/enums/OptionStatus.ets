@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
-
-export default function testsuite() {
-  localUnitTest();
+export enum OptionStatus {
+  Default, // 默认状态
+  Right, // 正确状态
+  Wrong // 错误状态
 }
