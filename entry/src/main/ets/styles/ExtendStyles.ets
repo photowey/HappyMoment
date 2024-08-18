@@ -13,20 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface OptionButtonStyleOption {
-  font: ResourceColor
-  background: ResourceColor,
-}
-
-export interface ControlButtonStyleOption {
-  font: ResourceColor
-  border: ResourceColor,
-  background: ResourceColor,
-}
-
-export interface Answer {
-  option: string
-  answer: string,
-  determineIsRight: () => boolean,
-}

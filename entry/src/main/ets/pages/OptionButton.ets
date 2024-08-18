@@ -17,7 +17,7 @@
 import { AnswerStatus } from '../enums/AnswerStatus'
 
 import { OptionStatus } from '../enums/OptionStatus'
-import { OptionButtonStyleOption } from '../model/ButtonOption'
+import { OptionButtonStyleOption } from '../models/ButtonOption'
 
 @Component
 export struct OptionButton {

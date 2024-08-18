@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { AnswerStatus } from '../enums/AnswerStatus'
 
 import { PracticeStatus } from '../enums/PracticeStatus'
-import { getRandomQuestions, Question } from '../model/Question'
+import { getRandomQuestions, Question } from '../models/Question'
 import { promptAction } from '@kit.ArkUI'
-import { Answer, ControlButtonStyleOption } from '../model/ButtonOption'
+import { AnswerOption, ControlButtonStyleOption } from '../models/ButtonOption'
 import { OptionButton } from './OptionButton'
-
+import { StatBar } from './Statistics'
 
 // ----------------------------------------------------------------
 
@@ -30,69 +31,35 @@ struct Practice {
   // ----------------------------------------------------------------
 
   @State
+  answerCount: number = 0
+  @State
+  rightCount: number = 0
+  @State
+  totalCount: number = 10
+  // ----------------------------------------------------------------
+
+  @State
+  range: string[] = ['5', '10', '15', '20']
+  // ----------------------------------------------------------------
+
+  @State
   practiceStatus: PracticeStatus = PracticeStatus.Stopped
   @State
   answerStatus: AnswerStatus = AnswerStatus.Answering
   // ----------------------------------------------------------------
 
   @State
-  questions: Question[] = getRandomQuestions(10)
+  questions: Question[] = getRandomQuestions(this.totalCount)
   @State
   currentIndex: number = 0
   // ----------------------------------------------------------------
 
   @State
   selectedOption: string = ''
-
   // ----------------------------------------------------------------
 
-  start() {
-    // 1.修改状态
-    this.practiceStatus = PracticeStatus.Running
-    // TODO 2.启动计时器
-  }
-
-  pause() {
-    // 1.修改状态
-    this.practiceStatus = PracticeStatus.Paused
-    // TODO  2.停止计时器
-  }
-
-  stop() {
-    // 1.修改状态
-    this.practiceStatus = PracticeStatus.Stopped
-    // TODO 2.停止计时器
-    // TODO 3.弹窗提示
-  }
-
-  answer(answer: Answer) {
-    // 1.判断练习状态
-    if (this.practiceStatus !== PracticeStatus.Running) {
-      promptAction.showToast({
-        message: '请先点击开始测试',
-        duration: 1_500
-      })
-
-      return
-    }
-
-    // TODO 2.判断正误
-    this.selectedOption = answer.option
-
-    // TODO 3.更新统计信息
-
-    // TODO 4.切换题目
-    this.answerStatus = AnswerStatus.Answered
-    if (this.currentIndex < this.questions.length - 1) {
-      setTimeout(() => {
-        this.currentIndex++
-        this.answerStatus = AnswerStatus.Answering
-      }, answer.determineIsRight() ? 200 : 1_000)
-    } else {
-      // 结束测试
-      this.stop()
-    }
-  }
+  timerController: TextTimerController = new TextTimerController();
+  timeUsed: number = 0;
 
   // ----------------------------------------------------------------
 
@@ -114,33 +81,153 @@ struct Practice {
 
   // ----------------------------------------------------------------
 
+  currentQuestion(): Question {
+    return this.questions[this.currentIndex]
+  }
+
+  // ----------------------------------------------------------------
+
+  start() {
+    // 1.修改状态
+    this.practiceStatus = PracticeStatus.Running
+    // 2.启动计时器
+    this.timerController.start()
+  }
+
+  pause() {
+    // 1.修改状态
+    this.practiceStatus = PracticeStatus.Paused
+    //  2.停止计时器
+    this.timerController.pause()
+  }
+
+  stop() {
+    // 1.修改状态
+    this.practiceStatus = PracticeStatus.Stopped
+    // 2.停止计时器
+    this.timerController.pause()
+    // TODO 3.弹窗提示
+  }
+
+  answer(answer: AnswerOption) {
+    // 1.判断练习状态
+    if (this.practiceStatus !== PracticeStatus.Running) {
+      promptAction.showToast({
+        message: '请先点击开始测试',
+        duration: 1_500
+      })
+
+      return
+    }
+
+    // 2.判断正误
+    this.selectedOption = answer.option
+
+    // 3.更新统计信息
+    // 答题数量
+    this.answerCount++
+    if (answer.judge()) {
+      // 正确数量
+      this.rightCount++
+    }
+
+    // 4.切换题目
+    this.answerStatus = AnswerStatus.Answered
+    if (this.currentIndex < this.questions.length - 1) {
+      setTimeout(() => {
+        this.currentIndex++
+        this.answerStatus = AnswerStatus.Answering
+      }, answer.judge() ? 200 : 1_000)
+    } else {
+      // 结束测试
+      this.stop()
+    }
+  }
+
+  // ----------------------------------------------------------------
+
   build() {
     Column() {
-      // TODO 统计面板
+      // 统计面板
       Column() {
-        Text('准确率')
-        Text('进度')
-        Text('个数')
-        Text('用时')
+        StatBar({
+          icon: $r('app.media.ic_accuracy'),
+          name: '准确率',
+          fontColor: Color.Black,
+        }) {
+          Text((this.answerCount === 0 ? 0 : this.rightCount / this.answerCount * 100).toFixed() + "%")
+            .width(100)
+            .textAlign(TextAlign.Center)
+        }
+
+        StatBar({
+          icon: $r('app.media.ic_progress'),
+          name: '进度',
+          fontColor: Color.Black,
+        }) {
+          Progress({
+            value: this.answerCount,
+            total: this.totalCount,
+          })
+            .width(100)
+        }
+
+        StatBar({
+          icon: $r('app.media.ic_count'),
+          name: '个数',
+          fontColor: Color.Black,
+        }) {
+          Button(this.totalCount.toString())
+            .width(100)
+            .height(25)
+            .fontColor(Color.Black)
+            .backgroundColor('#EBEBEB')
+            .enabled(this.determinePracticeIsStopped())
+            .onClick(() => {
+              TextPickerDialog.show({
+                range: this.range,
+                value: this.totalCount.toString(),
+                onAccept: (picked) => {
+                  this.totalCount = parseInt(picked.value.toString())
+                  this.questions = getRandomQuestions(this.totalCount)
+                }
+              })
+            })
+        }
+
+        StatBar({
+          icon: $r('app.media.ic_timer'),
+          name: '用时',
+          fontColor: Color.Black,
+        }) {
+          Row() {
+            TextTimer({ controller: this.timerController })
+              .onTimer(( /* current.timestamp: utc */_: number, /* unit: ms */elapsedTime: number) => {
+                this.timeUsed = elapsedTime
+              })
+          }
+          .width(100)
+          .justifyContent(FlexAlign.Center)
+        }
       }
       .statBackgroundStyle()
 
-      // TODO 题目
+      // 题目
       Column() {
-        Text(this.questions[this.currentIndex].word)
+        Text(this.currentQuestion().word)
           .wordStyle()
-        Text(this.questions[this.currentIndex].sentence)
+        Text(this.currentQuestion().sentence)
           .sentenceStyle()
       }
 
-      // TODO 选项
+      // 选项
       Column({ space: 10 }) {
         ForEach(
-          this.questions[this.currentIndex].options,
+          this.currentQuestion().options,
           (option: string) => {
             OptionButton({
               option: option,
-              answer: this.questions[this.currentIndex].answer,
+              answer: this.currentQuestion().answer,
               selectedOption: this.selectedOption,
               answerStatus: this.answerStatus
             })
@@ -148,16 +235,16 @@ struct Practice {
               .onClick(() => {
                 this.answer({
                   option: option,
-                  answer: this.questions[this.currentIndex].answer,
-                  determineIsRight: () => {
-                    return option === this.questions[this.currentIndex].answer
+                  answer: this.currentQuestion().answer,
+                  judge: () => {
+                    return option === this.currentQuestion().answer
                   }
                 })
               })
           },
           (option: string) => {
             /* 自定义 Key */
-            return this.questions[this.currentIndex].word + '-' + option
+            return this.currentQuestion().word + '-' + option
           }
         )
       }
