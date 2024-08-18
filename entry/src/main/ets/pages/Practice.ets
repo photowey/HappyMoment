@@ -19,7 +19,7 @@ import { AnswerStatus } from '../enums/AnswerStatus'
 import { PracticeStatus } from '../enums/PracticeStatus'
 import { getRandomQuestions, Question } from '../models/Question'
 import { promptAction } from '@kit.ArkUI'
-import { AnswerOption, ControlButtonStyleOption } from '../models/ButtonOption'
+import { ControlButtonStyleOption, AnswerOption as SelectedOption } from '../models/ButtonOption'
 import { OptionButton } from '../component/OptionButton'
 import { StatBar } from '../component/Statistics'
 import { StatisticsDialog } from '../component/StatisticsDialog'
@@ -81,24 +81,39 @@ export struct Practice {
 
   // ----------------------------------------------------------------
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determineAnswerIsAnswering() {
     return this.answerStatus === AnswerStatus.Answering
   }
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determinePracticeIsNotStopped() {
     return !this.determinePracticeIsStopped()
   }
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determinePracticeIsStopped() {
     return this.practiceStatus === PracticeStatus.Stopped
   }
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determinePracticeIsRunning() {
     return this.practiceStatus === PracticeStatus.Running
   }
 
   // ----------------------------------------------------------------
 
+  /**
+   * @deprecated since 1.0.0
+   */
   currentQuestion(): Question {
     return this.questions[this.currentIndex]
   }
@@ -142,7 +157,7 @@ export struct Practice {
     this.dialogController.open()
   }
 
-  answer(answer: AnswerOption) {
+  answer(selected: SelectedOption) {
     // 1.判断练习状态
     if (this.practiceStatus !== PracticeStatus.Running) {
       promptAction.showToast({
@@ -154,12 +169,12 @@ export struct Practice {
     }
 
     // 2.判断正误
-    this.selectedOption = answer.option
+    this.selectedOption = selected.option
 
     // 3.更新统计信息
     // 答题数量
     this.answeredCount++
-    if (answer.judge()) {
+    if (selected.judge()) {
       // 正确数量
       this.rightCount++
     }
@@ -170,7 +185,7 @@ export struct Practice {
       setTimeout(() => {
         this.currentIndex++
         this.answerStatus = AnswerStatus.Answering
-      }, answer.judge() ? 200 : 1_000)
+      }, selected.judge() ? 200 : 1_000)
     } else {
       // 结束测试
       this.stop()
@@ -215,7 +230,7 @@ export struct Practice {
             .height(25)
             .fontColor(Color.Black)
             .backgroundColor('#EBEBEB')
-            .enabled(this.determinePracticeIsStopped())
+            .enabled(this.practiceStatus === PracticeStatus.Stopped)
             .onClick(() => {
               TextPickerDialog.show({
                 range: this.range,
@@ -247,37 +262,37 @@ export struct Practice {
 
       // 题目
       Column() {
-        Text(this.currentQuestion().word)
+        Text(this.questions[this.currentIndex].word)
           .wordStyle()
-        Text(this.currentQuestion().sentence)
+        Text(this.questions[this.currentIndex].sentence)
           .sentenceStyle()
       }
 
       // 选项
       Column({ space: 10 }) {
         ForEach(
-          this.currentQuestion().options,
+          this.questions[this.currentIndex].options,
           (option: string) => {
             OptionButton({
               option: option,
-              answer: this.currentQuestion().answer,
+              answer: this.questions[this.currentIndex].answer,
               selectedOption: this.selectedOption,
               answerStatus: this.answerStatus
             })
-              .enabled(this.determineAnswerIsAnswering())
+              .enabled(this.answerStatus === AnswerStatus.Answering)
               .onClick(() => {
                 this.answer({
                   option: option,
-                  answer: this.currentQuestion().answer,
+                  answer: this.questions[this.currentIndex].answer,
                   judge: () => {
-                    return option === this.currentQuestion().answer
+                    return option === this.questions[this.currentIndex].answer
                   }
                 })
               })
           },
           (option: string) => {
             /* 自定义 Key */
-            return this.currentQuestion().word + '-' + option
+            return this.questions[this.currentIndex].word + '-' + option
           }
         )
       }
@@ -286,27 +301,27 @@ export struct Practice {
         Button('停止测试')
           .controlButtonStyle({
             // 停止 - 灰色
-            font: this.determinePracticeIsStopped() ? Color.Gray : Color.Black,
+            font: (this.practiceStatus === PracticeStatus.Stopped) ? Color.Gray : Color.Black,
             // 停止 - 灰色
-            border: this.determinePracticeIsStopped() ? Color.Gray : Color.Black,
+            border: (this.practiceStatus === PracticeStatus.Stopped) ? Color.Gray : Color.Black,
             // 背景色 - 透明
             background: Color.Transparent
           })
-          .enabled(this.determinePracticeIsNotStopped())
+          .enabled(this.practiceStatus !== PracticeStatus.Stopped)
           .onClick(() => {
             // 停止测试
             this.stop()
           })
 
-        Button(this.determinePracticeIsRunning() ? '开始测试' : '开始测试')
+        Button((this.practiceStatus === PracticeStatus.Running) ? '开始测试' : '开始测试')
           .controlButtonStyle({
             font: Color.White,
-            border: this.determinePracticeIsRunning() ? '#555555' : Color.Black,
-            background: this.determinePracticeIsRunning() ? '#555555' : Color.Black,
+            border: (this.practiceStatus === PracticeStatus.Running) ? '#555555' : Color.Black,
+            background: (this.practiceStatus === PracticeStatus.Running) ? '#555555' : Color.Black,
           })
           .stateEffect(false)
           .onClick(() => {
-            if (this.determinePracticeIsRunning()) {
+            if ((this.practiceStatus === PracticeStatus.Running)) {
               // 暂停测试
               this.pause()
             } else {

@@ -77,10 +77,16 @@ export struct OptionButton {
 
   // ----------------------------------------------------------------
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determineOptionIsRight(): boolean {
     return this.optionStatus === OptionStatus.Right
   }
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determineOptionIsWrong(): boolean {
     return this.optionStatus === OptionStatus.Wrong
   }
@@ -94,13 +100,13 @@ export struct OptionButton {
           font: this.determineOptionFontColor(),
           background: this.determineBackgroundColor()
         })
-      if (this.determineOptionIsRight()) {
+      if (this.optionStatus === OptionStatus.Right) {
         Image($r('app.media.ic_right'))
           .width(22)
           .height(22)
           .offset({ x: 10 })
       }
-      if (this.determineOptionIsWrong()) {
+      if (this.optionStatus === OptionStatus.Wrong) {
         Image($r('app.media.ic_wrong'))
           .width(22)
           .height(22)

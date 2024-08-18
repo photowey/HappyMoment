@@ -19,7 +19,7 @@ import { ControlButtonStyleOption } from '../models/ButtonOption';
 import { convertMillisecondsToTime } from '../utils/DateUtils';
 import { StatBar } from './Statistics';
 import { promptAction, router } from '@kit.ArkUI';
-import { CURRENT_TAB_INDEX_NAME, PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyMomentConstants';
+import { CURRENT_TAB_INDEX_NAME, PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyConstants';
 import emitter from '@ohos.events.emitter';
 
 function emptyFx(): void { }
@@ -52,14 +52,8 @@ export struct StatisticsDialog {
 
   // ----------------------------------------------------------------
 
-  determineIsLogined(): boolean {
-    return this.token !== ''
-  }
-
-  // ----------------------------------------------------------------
-
   async triggerMoment() {
-    if (this.determineIsLogined()) {
+    if (this.token) {
       // 已经登录
       // 1.发起打卡
       await createPost({
@@ -148,7 +142,7 @@ export struct StatisticsDialog {
               this.reset()
               this.restart()
             })
-          Button(this.determineIsLogined() ? '立即打卡' : '登录打卡')
+          Button(this.token ? '立即打卡' : '登录打卡')
             .controlButtonStyle({
               font: Color.White,
               border: Color.Black,

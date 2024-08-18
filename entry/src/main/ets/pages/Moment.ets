@@ -19,7 +19,7 @@ import emitter from '@ohos.events.emitter'
 import { promptAction, router } from '@kit.ArkUI'
 import { ApiResponse, cancelLike, like, posts } from '../api/Api'
 import { StatBar } from '../component/Statistics'
-import { PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyMomentConstants'
+import { PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyConstants'
 import { IPosts, Post } from '../models/Post'
 import { convertMillisecondsToTime } from '../utils/DateUtils'
 
@@ -63,7 +63,7 @@ export struct Moment {
   // ----------------------------------------------------------------
 
   aboutToAppear(): void {
-    if (this.determineIsLogined()) {
+    if (this.token) {
       this.loadPosts()
     }
 
@@ -76,7 +76,7 @@ export struct Moment {
   // ----------------------------------------------------------------
 
   onTokenChanged() {
-    if (this.determineIsLogined()) {
+    if (this.token) {
       // 登录
       this.loadPosts()
     } else {
@@ -87,10 +87,16 @@ export struct Moment {
 
   // ----------------------------------------------------------------
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determineIsLogined(): boolean {
     return this.token !== ''
   }
 
+  /**
+   * @deprecated since 1.0.0
+   */
   determineOnReachEnd(): boolean {
     return this.posts.length < this.total
   }
@@ -151,7 +157,7 @@ export struct Moment {
         .color(Color.Black)
         .margin({ left: 20, right: 20, top: 10 })
 
-      if (this.determineIsLogined()) {
+      if (this.token) {
         // 打卡列表
         if (this.isLoading) {
           this.loadingBuilder()
@@ -184,7 +190,7 @@ export struct Moment {
       .alignListItem(ListItemAlign.Center)
       .onReachEnd(() => {
         // 没加载完 -> 加载下一个
-        if (this.determineOnReachEnd()) {
+        if (this.posts.length < this.total) {
           this.nextPosts()
         } else {
           promptAction.showToast({
@@ -312,9 +318,10 @@ struct PostComp {
             name: '准确率',
             fontColor: Color.White
           }) {
-            Text((this.post.answeredCount === 0
-              ? 0
-              : this.post.rightCount / this.post.answeredCount * 100).toFixed(0) + '%')
+            Text((
+              this.post.answeredCount === 0
+                ? 0
+                : this.post.rightCount / this.post.answeredCount * 100).toFixed(0) + '%')
               .statTextStyle()
           }
 

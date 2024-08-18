@@ -18,7 +18,7 @@ import { promptAction, router } from '@kit.ArkUI'
 import { AxiosResponse } from '@ohos/axios'
 import { ApiResponse, createPost, login, sendCode } from '../api/Api'
 import { PostPayload } from '../models/Post'
-import { CURRENT_TAB_INDEX_NAME, PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyMomentConstants'
+import { CURRENT_TAB_INDEX_NAME, PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyConstants'
 import emitter from '@ohos.events.emitter'
 
 @Entry

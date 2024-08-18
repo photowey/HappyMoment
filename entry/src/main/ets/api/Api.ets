@@ -17,7 +17,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from '@ohos/axios';
 import promptAction from '@ohos.promptAction';
 import { IPost, IPosts, IQuery, LoginPayload, PostPayload } from '../models/Post';
-import { TOKEN_NAME } from '../constants/HappyMomentConstants';
+import { TOKEN_NAME } from '../constants/HappyConstants';
 
 // ----------------------------------------------------------------
 

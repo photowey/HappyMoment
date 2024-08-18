@@ -15,7 +15,7 @@
  */
 
 import { router } from '@kit.ArkUI';
-import { CURRENT_TAB_INDEX_NAME, TOKEN_NAME } from '../constants/HappyMomentConstants';
+import { CURRENT_TAB_INDEX_NAME, TOKEN_NAME } from '../constants/HappyConstants';
 
 // ----------------------------------------------------------------
 

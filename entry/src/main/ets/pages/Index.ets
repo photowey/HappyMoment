@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CURRENT_TAB_INDEX_NAME } from '../constants/HappyMomentConstants';
+import { CURRENT_TAB_INDEX_NAME } from '../constants/HappyConstants';
 import { Moment } from './Moment';
 import { Practice } from './Practice';
 
@@ -25,9 +25,16 @@ struct Index {
   @StorageLink(CURRENT_TAB_INDEX_NAME)
   currentTabIndex: number = 0;
 
+  // ----------------------------------------------------------------
+
+  /**
+   * @deprecated since 1.0.0
+   */
   tabSelected(index: number) {
     return this.currentTabIndex === index
   }
+
+  // ----------------------------------------------------------------
 
   build() {
     Tabs({ index: this.currentTabIndex }) {
@@ -52,10 +59,10 @@ struct Index {
   @Builder
   barBuilder(index: number, icon: Resource, selectedIcon: Resource, title: string) {
     Column() {
-      Image(this.tabSelected(index) ? selectedIcon : icon)
+      Image((this.currentTabIndex === index) ? selectedIcon : icon)
         .tabIconStyle()
       Text(title)
-        .tabTitleStyle(this.tabSelected(index) ? Color.Black : '#959595')
+        .tabTitleStyle((this.currentTabIndex === index) ? Color.Black : '#959595')
     }
   }
 }
