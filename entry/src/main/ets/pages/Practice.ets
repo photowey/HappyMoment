@@ -22,6 +22,7 @@ import { promptAction } from '@kit.ArkUI'
 import { AnswerOption, ControlButtonStyleOption } from '../models/ButtonOption'
 import { OptionButton } from './OptionButton'
 import { StatBar } from './Statistics'
+import { StatisticsDialog } from './StatisticsDialog'
 
 // ----------------------------------------------------------------
 
@@ -31,7 +32,7 @@ struct Practice {
   // ----------------------------------------------------------------
 
   @State
-  answerCount: number = 0
+  answeredCount: number = 0
   @State
   rightCount: number = 0
   @State
@@ -60,6 +61,24 @@ struct Practice {
 
   timerController: TextTimerController = new TextTimerController();
   timeUsed: number = 0;
+  // ----------------------------------------------------------------
+
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: StatisticsDialog({
+      answeredCount: this.answeredCount,
+      rightCount: this.rightCount,
+      timeUsed: this.timeUsed,
+      reset: () => {
+        this.reset()
+      },
+      restart: () => {
+        this.restart()
+      }
+    }),
+    customStyle: true,
+    // 不允许点击遮障层(蒙皮)关闭
+    autoCancel: false,
+  })
 
   // ----------------------------------------------------------------
 
@@ -87,6 +106,20 @@ struct Practice {
 
   // ----------------------------------------------------------------
 
+  reset() {
+    this.questions = getRandomQuestions(this.totalCount)
+    this.currentIndex = 0
+    this.answeredCount = 0
+    this.rightCount = 0
+    this.timeUsed = 0
+    this.timerController.reset()
+    this.answerStatus = AnswerStatus.Answering
+  }
+
+  restart() {
+    this.start()
+  }
+
   start() {
     // 1.修改状态
     this.practiceStatus = PracticeStatus.Running
@@ -106,7 +139,8 @@ struct Practice {
     this.practiceStatus = PracticeStatus.Stopped
     // 2.停止计时器
     this.timerController.pause()
-    // TODO 3.弹窗提示
+    // 3.弹窗提示
+    this.dialogController.open()
   }
 
   answer(answer: AnswerOption) {
@@ -125,7 +159,7 @@ struct Practice {
 
     // 3.更新统计信息
     // 答题数量
-    this.answerCount++
+    this.answeredCount++
     if (answer.judge()) {
       // 正确数量
       this.rightCount++
@@ -155,7 +189,7 @@ struct Practice {
           name: '准确率',
           fontColor: Color.Black,
         }) {
-          Text((this.answerCount === 0 ? 0 : this.rightCount / this.answerCount * 100).toFixed() + "%")
+          Text((this.answeredCount === 0 ? 0 : this.rightCount / this.answeredCount * 100).toFixed() + "%")
             .width(100)
             .textAlign(TextAlign.Center)
         }
@@ -166,7 +200,7 @@ struct Practice {
           fontColor: Color.Black,
         }) {
           Progress({
-            value: this.answerCount,
+            value: this.answeredCount,
             total: this.totalCount,
           })
             .width(100)
@@ -328,8 +362,8 @@ function sentenceStyle() {
 @Extend(Button)
 function controlButtonStyle(buttonOption: ControlButtonStyleOption) {
   .fontSize(16)
+  .borderWidth(1)
   .fontColor(buttonOption.font)
   .borderColor(buttonOption.border)
-  .borderWidth(1)
   .backgroundColor(buttonOption.background)
 }
