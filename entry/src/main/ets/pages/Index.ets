@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { CURRENT_TAB_INDEX_NAME } from '../constants/HappyMomentConstants';
+import { Moment } from './Moment';
 import { Practice } from './Practice';
 
 @Entry
 @Component
 struct Index {
 
-  @State
+  @StorageLink(CURRENT_TAB_INDEX_NAME)
   currentTabIndex: number = 0;
 
   tabSelected(index: number) {
@@ -28,14 +30,14 @@ struct Index {
   }
 
   build() {
-    Tabs() {
+    Tabs({ index: this.currentTabIndex }) {
       TabContent() {
         Practice()
-      }.tabBar(this.barBuilder(2, $r('app.media.ic_practice'), $r('app.media.ic_practice_selected'), '答题'))
+      }.tabBar(this.barBuilder(0, $r('app.media.ic_practice'), $r('app.media.ic_practice_selected'), '答题'))
 
       TabContent() {
-        Text('圈子')
-      }.tabBar(this.barBuilder(2, $r('app.media.ic_circle'), $r('app.media.ic_circle_selected'), '圈子'))
+        Moment()
+      }.tabBar(this.barBuilder(1, $r('app.media.ic_circle'), $r('app.media.ic_circle_selected'), '圈子'))
 
       TabContent() {
         Text('我的')

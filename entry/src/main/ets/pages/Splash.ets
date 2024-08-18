@@ -15,6 +15,14 @@
  */
 
 import { router } from '@kit.ArkUI';
+import { CURRENT_TAB_INDEX_NAME, TOKEN_NAME } from '../constants/HappyMomentConstants';
+
+// ----------------------------------------------------------------
+
+PersistentStorage.persistProp<string>(TOKEN_NAME, '');
+AppStorage.setOrCreate<number>(CURRENT_TAB_INDEX_NAME, 0);
+
+// ----------------------------------------------------------------
 
 @Entry
 @Component

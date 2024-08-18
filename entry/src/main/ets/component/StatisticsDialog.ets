@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { createPost } from '../api/Api';
 import { ControlButtonStyleOption } from '../models/ButtonOption';
 import { convertMillisecondsToTime } from '../utils/DateUtils';
 import { StatBar } from './Statistics';
+import { promptAction, router } from '@kit.ArkUI';
+import { CURRENT_TAB_INDEX_NAME, PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyMomentConstants';
+import emitter from '@ohos.events.emitter';
 
 function emptyFx(): void { }
 
@@ -37,6 +41,58 @@ export struct StatisticsDialog {
   controller: CustomDialogController = new CustomDialogController({
     builder: StatisticsDialog()
   })
+  // ----------------------------------------------------------------
+
+  @StorageProp(TOKEN_NAME)
+  token: string = ''
+  // ----------------------------------------------------------------
+
+  @StorageLink(CURRENT_TAB_INDEX_NAME)
+  currentTabIndex: number = 0;
+
+  // ----------------------------------------------------------------
+
+  determineIsLogined(): boolean {
+    return this.token !== ''
+  }
+
+  // ----------------------------------------------------------------
+
+  async triggerMoment() {
+    if (this.determineIsLogined()) {
+      // 已经登录
+      // 1.发起打卡
+      await createPost({
+        rightCount: this.rightCount,
+        answeredCount: this.answeredCount,
+        timeUsed: this.timeUsed,
+      })
+
+      promptAction.showToast({
+        message: '打卡成功'
+      })
+
+      // 2.发送事件通知
+      emitter.emit(PAGE_MOMENT_REFRESH_EVENT)
+
+      // 3.跳转打卡圈
+      this.currentTabIndex = 1
+    } else {
+      // 1.未登录 -> 发起登录
+      router.pushUrl({
+        url: 'pages/Login',
+        params: {
+          rightCount: this.rightCount,
+          answeredCount: this.answeredCount,
+          timeUsed: this.timeUsed,
+        }
+      })
+
+      // 已迁移到登录界面
+      // 2.发起打卡
+      // 3.跳转打卡圈
+    }
+  }
 
   build() {
     Column({ space: 10 }) {
@@ -92,16 +148,18 @@ export struct StatisticsDialog {
               this.reset()
               this.restart()
             })
-          Button('登录打卡')
+          Button(this.determineIsLogined() ? '立即打卡' : '登录打卡')
             .controlButtonStyle({
               font: Color.White,
               border: Color.Black,
               background: Color.Black,
             })
-            .onClick(() => {
+            .onClick(async () => {
               this.controller.close()
               this.reset()
-              // TODO 登录并打卡
+
+              // 触发打开
+              this.triggerMoment()
             })
         }
       }
