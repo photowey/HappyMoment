@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
+export function convertMillisecondsToTime(timeUsed: number): string {
+  // 计算小时、分钟和秒
+  const hours = Math.floor(timeUsed / 3600000); // 1 小时 = 3600000 毫秒
+  const minutes = Math.floor((timeUsed % 3600000) / 60000); // 1 分钟 = 60000 毫秒
+  const seconds = Math.floor((timeUsed % 60000) / 1000); // 1 秒 = 1000 毫秒
 
-export default function testsuite() {
-  localUnitTest();
+  // 将结果格式化为时分秒字符串
+  if (hours > 0) {
+    return `${hours}时  ${minutes}分 ${seconds}秒`
+  } else if (minutes > 0) {
+    return `${minutes}分 ${seconds}秒`
+  } else {
+    return `${seconds}秒`
+  }
 }

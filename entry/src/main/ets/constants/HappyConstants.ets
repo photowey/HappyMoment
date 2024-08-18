@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
+export const TOKEN_NAME: string = 'token'
 
-export default function testsuite() {
-  localUnitTest();
-}
+export const CURRENT_TAB_INDEX_NAME: string = 'currentTabIndex'
+
+export const PAGE_MOMENT_REFRESH_EVENT: string = 'happy.moment.pages.moment.refresh.event'
+
+export const PAGE_SIZE_DEFAULT: number = 10

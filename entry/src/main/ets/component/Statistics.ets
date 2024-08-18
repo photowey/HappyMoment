@@ -14,8 +14,27 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
+@Component
+export struct StatBar {
+  icon: Resource = $r('app.media.img_practice_bg');
+  name: string = '';
+  fontColor: Color = Color.White
+  @BuilderParam
+  statComponent: () => void;
 
-export default function testsuite() {
-  localUnitTest();
+  build() {
+    Row({ space: 10 }) {
+      Image(this.icon)
+        .width(14)
+        .height(14)
+      Text(this.name)
+        .fontSize(14)
+        .fontColor(this.fontColor)
+        .fontWeight(FontWeight.Medium)
+      Blank()
+      this.statComponent()
+    }
+    .width('100%')
+    .height(30)
+  }
 }

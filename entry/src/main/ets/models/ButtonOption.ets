@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
+export interface OptionButtonStyleOption {
+  font: ResourceColor
+  background: ResourceColor,
+}
 
-export default function testsuite() {
-  localUnitTest();
+export interface ControlButtonStyleOption {
+  font: ResourceColor
+  border: ResourceColor,
+  background: ResourceColor,
+}
+
+export interface AnswerOption {
+  option: string
+  answer: string,
+  judge: () => boolean,
 }

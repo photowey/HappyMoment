@@ -1,20 +1,83 @@
+/*
+ * Copyright © 2024 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { CURRENT_TAB_INDEX_NAME } from '../constants/HappyConstants';
+import { Mine } from './Mine';
+import { Moment } from './Moment';
+import { Practice } from './Practice';
+
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+
+  @StorageLink(CURRENT_TAB_INDEX_NAME)
+  currentTabIndex: number = 0;
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @deprecated since 1.0.0
+   */
+  tabSelected(index: number) {
+    return this.currentTabIndex === index
+  }
+
+  // ----------------------------------------------------------------
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Tabs({ index: this.currentTabIndex }) {
+      TabContent() {
+        Practice()
+      }.tabBar(this.barBuilder(0, $r('app.media.ic_practice'), $r('app.media.ic_practice_selected'), '答题'))
+
+      TabContent() {
+        Moment()
+      }.tabBar(this.barBuilder(1, $r('app.media.ic_circle'), $r('app.media.ic_circle_selected'), '圈子'))
+
+      TabContent() {
+        Mine()
+      }.tabBar(this.barBuilder(2, $r('app.media.ic_mine'), $r('app.media.ic_mine_selected'), '我的'))
     }
-    .height('100%')
-    .width('100%')
+    .barPosition(BarPosition.End)
+    .onChange((index) => {
+      this.currentTabIndex = index
+    })
   }
+
+  @Builder
+  barBuilder(index: number, icon: Resource, selectedIcon: Resource, title: string) {
+    Column() {
+      Image((this.currentTabIndex === index) ? selectedIcon : icon)
+        .tabIconStyle()
+      Text(title)
+        .tabTitleStyle((this.currentTabIndex === index) ? Color.Black : '#959595')
+    }
+  }
+}
+
+@Styles
+function tabIconStyle() {
+  .width(25)
+  .height(25)
+}
+
+@Extend(Text)
+function tabTitleStyle(color: ResourceColor) {
+  .fontSize(10)
+  .fontWeight(FontWeight.Medium)
+  .fontColor(color)
+  .margin({ bottom: 2 })
 }

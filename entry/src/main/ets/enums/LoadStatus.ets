@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import localUnitTest from './LocalUnit.test';
-
-export default function testsuite() {
-  localUnitTest();
+export enum LoadStatus {
+  Loading,
+  Loaded
 }
