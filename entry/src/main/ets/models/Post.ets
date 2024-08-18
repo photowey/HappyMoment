@@ -56,6 +56,11 @@ export interface IPosts {
   records: IPost[]
 }
 
+export interface IUser {
+  nickname: string;
+  avatarUrl: string;
+}
+
 // ----------------------------------------------------------------
 
 @Observed
@@ -98,5 +103,16 @@ export class Posts {
     this.size = posts.size;
     this.total = posts.total;
     this.records = posts.records;
+  }
+}
+
+@Observed
+export class User {
+  nickname?: string;
+  avatarUrl?: string;
+
+  constructor(user: IUser) {
+    this.nickname = user.nickname;
+    this.avatarUrl = user.avatarUrl;
   }
 }

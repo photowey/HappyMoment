@@ -15,6 +15,7 @@
  */
 
 import { CURRENT_TAB_INDEX_NAME } from '../constants/HappyConstants';
+import { Mine } from './Mine';
 import { Moment } from './Moment';
 import { Practice } from './Practice';
 
@@ -47,7 +48,7 @@ struct Index {
       }.tabBar(this.barBuilder(1, $r('app.media.ic_circle'), $r('app.media.ic_circle_selected'), '圈子'))
 
       TabContent() {
-        Text('我的')
+        Mine()
       }.tabBar(this.barBuilder(2, $r('app.media.ic_mine'), $r('app.media.ic_mine_selected'), '我的'))
     }
     .barPosition(BarPosition.End)

@@ -16,7 +16,7 @@
 
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from '@ohos/axios';
 import promptAction from '@ohos.promptAction';
-import { IPost, IPosts, IQuery, LoginPayload, PostPayload } from '../models/Post';
+import { IPost, IPosts, IQuery, IUser, LoginPayload, PostPayload } from '../models/Post';
 import { TOKEN_NAME } from '../constants/HappyConstants';
 
 // ----------------------------------------------------------------
@@ -90,7 +90,10 @@ export function createPost(payload: PostPayload) {
 // 获取全部打卡列表
 export function posts(query: IQuery) {
   return actor.get<ApiResponse<IPosts>, AxiosResponse<ApiResponse<IPosts>>>('/word/post/getAll', {
-    params: query
+    params: {
+      page: query.page,
+      size: query.size
+    }
   })
 }
 
@@ -102,4 +105,19 @@ export function like(postId: number) {
 // 取消点赞
 export function cancelLike(postId: number) {
   return actor.get('/word/like/cancel', { params: { postId: postId } })
+}
+
+// 获取登录用户信息
+export function info() {
+  return actor.get<ApiResponse<IUser>, AxiosResponse<ApiResponse<IUser>>>('/word/user/info')
+}
+
+// 获取我的登录打卡记录
+export function getMyPost(query: IQuery) {
+  return actor.get<ApiResponse<IPosts>, AxiosResponse<ApiResponse<IPosts>>>('/word/post/getMine', {
+    params: {
+      page: query.page,
+      size: query.size
+    }
+  })
 }

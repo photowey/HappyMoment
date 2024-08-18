@@ -19,11 +19,9 @@ import emitter from '@ohos.events.emitter'
 import { promptAction, router } from '@kit.ArkUI'
 import { ApiResponse, cancelLike, like, posts } from '../api/Api'
 import { StatBar } from '../component/Statistics'
-import { PAGE_MOMENT_REFRESH_EVENT, TOKEN_NAME } from '../constants/HappyConstants'
+import { PAGE_MOMENT_REFRESH_EVENT, PAGE_SIZE_DEFAULT, TOKEN_NAME } from '../constants/HappyConstants'
 import { IPosts, Post } from '../models/Post'
 import { convertMillisecondsToTime } from '../utils/DateUtils'
-
-const PAGE_SIZE: number = 10
 
 @Component
 export struct Moment {
@@ -129,16 +127,16 @@ export struct Moment {
   async nextPosts() {
     let response: AxiosResponse<ApiResponse<IPosts>> = await posts({
       page: this.page,
-      size: PAGE_SIZE,
+      size: PAGE_SIZE_DEFAULT,
     })
 
     promptAction.showToast({
       message: "加载完毕"
     })
 
-    response.data.data.records.forEach((post => {
+    response.data.data.records.forEach(post => {
       this.posts.push(new Post(post))
-    }))
+    })
 
     this.total = response.data.data.total
     this.page++
@@ -191,7 +189,7 @@ export struct Moment {
       .onReachEnd(() => {
         // 没加载完 -> 加载下一个
         if (this.posts.length < this.total) {
-          this.nextPosts()
+          this.loadPosts()
         } else {
           promptAction.showToast({
             message: '没有更多数据啦~'
@@ -229,7 +227,8 @@ export struct Moment {
         })
       }
       .offset({ x: -20, y: -50 })
-    }.width('100%')
+    }
+    .width('100%')
     .layoutWeight(1)
     .alignContent(Alignment.BottomEnd)
   }
