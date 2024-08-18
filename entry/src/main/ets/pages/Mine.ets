@@ -58,7 +58,7 @@ export struct Mine {
             router.pushUrl({ url: 'pages/Login' })
           })
 
-        Text(this.token ? this.user.nickname : '暂未登录')
+        Text(this.token ? this.user.nickname : '请登录')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.Black)

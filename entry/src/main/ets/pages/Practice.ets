@@ -15,7 +15,6 @@
  */
 
 import { AnswerStatus } from '../enums/AnswerStatus'
-
 import { PracticeStatus } from '../enums/PracticeStatus'
 import { getRandomQuestions, Question } from '../models/Question'
 import { promptAction } from '@kit.ArkUI'

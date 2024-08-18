@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { AxiosResponse } from '@ohos/axios';
 import { ApiResponse, getMyPost } from '../api/Api';
 import { PAGE_SIZE_DEFAULT } from '../constants/HappyConstants';
-
 import { IPosts, Post } from '../models/Post';
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';

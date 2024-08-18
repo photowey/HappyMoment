@@ -15,7 +15,6 @@
  */
 
 import { AnswerStatus } from '../enums/AnswerStatus'
-
 import { OptionStatus } from '../enums/OptionStatus'
 import { OptionButtonStyleOption } from '../models/ButtonOption'
 

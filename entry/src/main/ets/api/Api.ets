@@ -99,12 +99,14 @@ export function posts(query: IQuery) {
 
 // 点赞
 export function like(postId: number) {
-  return actor.get('/word/like/create', { params: { postId: postId } })
+  return actor.get<ApiResponse<void>, AxiosResponse<ApiResponse<void>>>('/word/like/create',
+    { params: { postId: postId } })
 }
 
 // 取消点赞
 export function cancelLike(postId: number) {
-  return actor.get('/word/like/cancel', { params: { postId: postId } })
+  return actor.get<ApiResponse<void>, AxiosResponse<ApiResponse<void>>>('/word/like/cancel',
+    { params: { postId: postId } })
 }
 
 // 获取登录用户信息
