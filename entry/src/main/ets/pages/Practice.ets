@@ -20,15 +20,14 @@ import { PracticeStatus } from '../enums/PracticeStatus'
 import { getRandomQuestions, Question } from '../models/Question'
 import { promptAction } from '@kit.ArkUI'
 import { AnswerOption, ControlButtonStyleOption } from '../models/ButtonOption'
-import { OptionButton } from './OptionButton'
-import { StatBar } from './Statistics'
-import { StatisticsDialog } from './StatisticsDialog'
+import { OptionButton } from '../component/OptionButton'
+import { StatBar } from '../component/Statistics'
+import { StatisticsDialog } from '../component/StatisticsDialog'
 
 // ----------------------------------------------------------------
 
-@Entry
 @Component
-struct Practice {
+export struct Practice {
   // ----------------------------------------------------------------
 
   @State

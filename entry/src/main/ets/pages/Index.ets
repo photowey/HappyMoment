@@ -14,23 +14,60 @@
  * limitations under the License.
  */
 
+import { Practice } from './Practice';
+
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+
+  @State
+  currentTabIndex: number = 0;
+
+  tabSelected(index: number) {
+    return this.currentTabIndex === index
+  }
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Tabs() {
+      TabContent() {
+        Practice()
+      }.tabBar(this.barBuilder(2, $r('app.media.ic_practice'), $r('app.media.ic_practice_selected'), '答题'))
+
+      TabContent() {
+        Text('圈子')
+      }.tabBar(this.barBuilder(2, $r('app.media.ic_circle'), $r('app.media.ic_circle_selected'), '圈子'))
+
+      TabContent() {
+        Text('我的')
+      }.tabBar(this.barBuilder(2, $r('app.media.ic_mine'), $r('app.media.ic_mine_selected'), '我的'))
     }
-    .height('100%')
-    .width('100%')
+    .barPosition(BarPosition.End)
+    .onChange((index) => {
+      this.currentTabIndex = index
+    })
   }
+
+  @Builder
+  barBuilder(index: number, icon: Resource, selectedIcon: Resource, title: string) {
+    Column() {
+      Image(this.tabSelected(index) ? selectedIcon : icon)
+        .tabIconStyle()
+      Text(title)
+        .tabTitleStyle(this.tabSelected(index) ? Color.Black : '#959595')
+    }
+  }
+}
+
+@Styles
+function tabIconStyle() {
+  .width(25)
+  .height(25)
+}
+
+@Extend(Text)
+function tabTitleStyle(color: ResourceColor) {
+  .fontSize(10)
+  .fontWeight(FontWeight.Medium)
+  .fontColor(color)
+  .margin({ bottom: 2 })
 }
