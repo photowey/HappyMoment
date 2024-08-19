@@ -87,7 +87,8 @@ export struct Mine {
               router.pushUrl({ url: 'pages/PostHistory' })
             } else {
               promptAction.showToast({
-                message: '请先点击头像登录'
+                message: '请先点击头像登录',
+                alignment: Alignment.Center
               })
             }
           }
@@ -100,7 +101,8 @@ export struct Mine {
           title: '检查更新',
           callback: () => {
             promptAction.showToast({
-              message: '您已是最新版本'
+              message: '您已是最新版本',
+              alignment: Alignment.Center
             })
           }
         })
@@ -112,7 +114,8 @@ export struct Mine {
           title: '关于我们',
           callback: () => {
             promptAction.showToast({
-              message: '牛仔很忙~'
+              message: '牛仔很忙~',
+              alignment: Alignment.Center
             })
           }
         })

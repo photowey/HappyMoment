@@ -15,7 +15,7 @@
  */
 
 import { AxiosResponse } from '@ohos/axios';
-import { ApiResponse, getMyPost } from '../api/Api';
+import { ApiResponse, myPosts } from '../api/Api';
 import { PAGE_SIZE_DEFAULT } from '../constants/HappyConstants';
 import { IPosts, Post } from '../models/Post';
 import router from '@ohos.router';
@@ -31,28 +31,54 @@ struct PostHistory {
   @State
   posts: Post[] = []
   @State
-  page: number = 1;
+  page: number = 1
   @State
-  total: number = 0;
+  total: number = 0
+  // ----------------------------------------------------------------
+
+  @State
+  isLoading: boolean = false
   // ----------------------------------------------------------------
 
   scroller: Scroller = new Scroller()
 
   // ----------------------------------------------------------------
 
-  onPageShow() {
-    this.reset();
+  aboutToAppear(): void {
+    this.isLoading = true
+    this.reset()
     this.loadPosts(this.page)
+    this.isLoading = false
   }
 
+  aboutToDisappear(): void {
+    this.reset()
+  }
+
+  // ----------------------------------------------------------------
+
+  onPageShow() {
+
+  }
+
+  onPageHide(): void {
+    this.reset()
+  }
+
+  // ----------------------------------------------------------------
+
   reset() {
-    this.posts = [];
-    this.page = 1;
-    this.total = 0;
+    this.posts = []
+    this.page = 1
+    this.total = 0
   }
 
   async loadPosts(page: number) {
-    let response: AxiosResponse<ApiResponse<IPosts>> = await getMyPost({
+    this.nextPosts(page)
+  }
+
+  async nextPosts(page: number) {
+    let response: AxiosResponse<ApiResponse<IPosts>> = await myPosts({
       page: page,
       size: PAGE_SIZE_DEFAULT,
     })
@@ -61,8 +87,8 @@ struct PostHistory {
       this.posts.push(new Post(post))
     })
 
-    this.total = response.data.data.total;
-    this.page++;
+    this.total = response.data.data.total
+    this.page++
   }
 
   build() {
@@ -81,7 +107,8 @@ struct PostHistory {
           .width(24)
           .height(24)
           .visibility(Visibility.Hidden)
-      }.width('100%')
+      }
+      .width('100%')
       .height(40)
       .justifyContent(FlexAlign.SpaceBetween)
       .padding({ left: 20, right: 20 })
@@ -90,12 +117,15 @@ struct PostHistory {
         .color(Color.Black)
         .margin({ left: 20, right: 20 })
 
-      if (this.posts.length > 0) {
-        this.listBuilder()
+      if (this.isLoading) {
+        this.loadingBuilder()
       } else {
-        this.emptyBuilder()
+        if (this.posts.length > 0) {
+          this.listBuilder()
+        } else {
+          this.emptyBuilder()
+        }
       }
-
     }
     .height('100%')
     .width('100%')
@@ -121,12 +151,16 @@ struct PostHistory {
       .alignListItem(ListItemAlign.Center)
       .onReachEnd(() => {
         if (this.posts.length < this.total) {
-          this.loadPosts(this.page)
+          this.nextPosts(this.page)
         } else {
           promptAction.showToast({
-            message: '没有更多数据啦~'
+            message: '没有更多数据啦~',
+            alignment: Alignment.Center
           })
         }
+      })
+      .onReachStart(() => {
+        // FIXME
       })
 
       Column({ space: 20 }) {
@@ -160,6 +194,22 @@ struct PostHistory {
         .height(200)
       Text('暂无数据')
         .fontSize(20)
+        .fontColor('#7e8892')
+        .fontWeight(FontWeight.Medium)
+    }
+    .width('100%')
+    .layoutWeight(1)
+    .justifyContent(FlexAlign.Center)
+  }
+
+  @Builder
+  loadingBuilder() {
+    Column({ space: 15 }) {
+      Image($r('app.media.ic_loading'))
+        .width(30)
+        .height(30)
+      Text('加载中...')
+        .fontSize(16)
         .fontColor('#7e8892')
         .fontWeight(FontWeight.Medium)
     }
@@ -221,3 +271,4 @@ struct PostHistory {
     .shadow({ radius: 20 })
   }
 }
+

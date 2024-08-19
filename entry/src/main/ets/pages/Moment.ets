@@ -61,7 +61,7 @@ export struct Moment {
   // ----------------------------------------------------------------
 
   aboutToAppear(): void {
-    if (this.token) {
+    if (this.determineIsLogined()) {
       this.loadPosts()
     }
 
@@ -74,7 +74,7 @@ export struct Moment {
   // ----------------------------------------------------------------
 
   onTokenChanged() {
-    if (this.token) {
+    if (this.determineIsLogined()) {
       // 登录
       this.loadPosts()
     } else {
@@ -85,16 +85,10 @@ export struct Moment {
 
   // ----------------------------------------------------------------
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determineIsLogined(): boolean {
     return this.token !== ''
   }
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determineOnReachEnd(): boolean {
     return this.posts.length < this.total
   }
@@ -130,9 +124,11 @@ export struct Moment {
       size: PAGE_SIZE_DEFAULT,
     })
 
+    /*
     promptAction.showToast({
       message: "加载完毕"
     })
+    */
 
     response.data.data.records.forEach(post => {
       this.posts.push(new Post(post))
@@ -155,7 +151,7 @@ export struct Moment {
         .color(Color.Black)
         .margin({ left: 20, right: 20, top: 10 })
 
-      if (this.token) {
+      if (this.determineIsLogined()) {
         // 打卡列表
         if (this.isLoading) {
           this.loadingBuilder()
@@ -188,13 +184,17 @@ export struct Moment {
       .alignListItem(ListItemAlign.Center)
       .onReachEnd(() => {
         // 没加载完 -> 加载下一个
-        if (this.posts.length < this.total) {
+        if (this.determineOnReachEnd()) {
           this.loadPosts()
         } else {
           promptAction.showToast({
-            message: '没有更多数据啦~'
+            message: '没有更多数据啦~',
+            alignment: Alignment.Center
           })
         }
+      })
+      .onReachStart(() => {
+        // FIXME
       })
 
       Column({ space: 20 }) {
@@ -222,7 +222,7 @@ export struct Moment {
         .opacity(0.5)
         .backgroundColor(Color.Black)
         .onClick(() => {
-          // FIXME 刷新
+          // 刷新
           this.refresh()
         })
       }

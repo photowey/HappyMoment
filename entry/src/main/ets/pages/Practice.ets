@@ -80,39 +80,24 @@ export struct Practice {
 
   // ----------------------------------------------------------------
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determineAnswerIsAnswering() {
     return this.answerStatus === AnswerStatus.Answering
   }
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determinePracticeIsNotStopped() {
     return !this.determinePracticeIsStopped()
   }
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determinePracticeIsStopped() {
     return this.practiceStatus === PracticeStatus.Stopped
   }
 
-  /**
-   * @deprecated since 1.0.0
-   */
   determinePracticeIsRunning() {
     return this.practiceStatus === PracticeStatus.Running
   }
 
   // ----------------------------------------------------------------
 
-  /**
-   * @deprecated since 1.0.0
-   */
   currentQuestion(): Question {
     return this.questions[this.currentIndex]
   }
@@ -161,7 +146,8 @@ export struct Practice {
     if (this.practiceStatus !== PracticeStatus.Running) {
       promptAction.showToast({
         message: '请先点击开始测试',
-        duration: 1_500
+        duration: 1_500,
+        alignment: Alignment.Center
       })
 
       return
@@ -229,7 +215,7 @@ export struct Practice {
             .height(25)
             .fontColor(Color.Black)
             .backgroundColor('#EBEBEB')
-            .enabled(this.practiceStatus === PracticeStatus.Stopped)
+            .enabled(this.determinePracticeIsStopped())
             .onClick(() => {
               TextPickerDialog.show({
                 range: this.range,
@@ -261,37 +247,37 @@ export struct Practice {
 
       // 题目
       Column() {
-        Text(this.questions[this.currentIndex].word)
+        Text(this.currentQuestion().word)
           .wordStyle()
-        Text(this.questions[this.currentIndex].sentence)
+        Text(this.currentQuestion().sentence)
           .sentenceStyle()
       }
 
       // 选项
       Column({ space: 10 }) {
         ForEach(
-          this.questions[this.currentIndex].options,
+          this.currentQuestion().options,
           (option: string) => {
             OptionButton({
               option: option,
-              answer: this.questions[this.currentIndex].answer,
+              answer: this.currentQuestion().answer,
               selectedOption: this.selectedOption,
               answerStatus: this.answerStatus
             })
-              .enabled(this.answerStatus === AnswerStatus.Answering)
+              .enabled(this.determineAnswerIsAnswering())
               .onClick(() => {
                 this.answer({
                   option: option,
-                  answer: this.questions[this.currentIndex].answer,
+                  answer: this.currentQuestion().answer,
                   judge: () => {
-                    return option === this.questions[this.currentIndex].answer
+                    return option === this.currentQuestion().answer
                   }
                 })
               })
           },
           (option: string) => {
             /* 自定义 Key */
-            return this.questions[this.currentIndex].word + '-' + option
+            return this.currentQuestion().word + '-' + option
           }
         )
       }
@@ -300,27 +286,27 @@ export struct Practice {
         Button('停止测试')
           .controlButtonStyle({
             // 停止 - 灰色
-            font: (this.practiceStatus === PracticeStatus.Stopped) ? Color.Gray : Color.Black,
+            font: (this.determinePracticeIsStopped()) ? Color.Gray : Color.Black,
             // 停止 - 灰色
-            border: (this.practiceStatus === PracticeStatus.Stopped) ? Color.Gray : Color.Black,
+            border: (this.determinePracticeIsStopped()) ? Color.Gray : Color.Black,
             // 背景色 - 透明
             background: Color.Transparent
           })
-          .enabled(this.practiceStatus !== PracticeStatus.Stopped)
+          .enabled(this.determinePracticeIsNotStopped())
           .onClick(() => {
             // 停止测试
             this.stop()
           })
 
-        Button((this.practiceStatus === PracticeStatus.Running) ? '开始测试' : '开始测试')
+        Button(this.determinePracticeIsRunning() ? '开始测试' : '开始测试')
           .controlButtonStyle({
             font: Color.White,
-            border: (this.practiceStatus === PracticeStatus.Running) ? '#555555' : Color.Black,
-            background: (this.practiceStatus === PracticeStatus.Running) ? '#555555' : Color.Black,
+            border: this.determinePracticeIsRunning() ? '#555555' : Color.Black,
+            background: this.determinePracticeIsRunning() ? '#555555' : Color.Black,
           })
           .stateEffect(false)
           .onClick(() => {
-            if ((this.practiceStatus === PracticeStatus.Running)) {
+            if (this.determinePracticeIsRunning()) {
               // 暂停测试
               this.pause()
             } else {

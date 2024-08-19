@@ -63,7 +63,8 @@ export struct StatisticsDialog {
       })
 
       promptAction.showToast({
-        message: '打卡成功'
+        message: '打卡成功',
+        alignment: Alignment.Center
       })
 
       // 2.发送事件通知

@@ -28,10 +28,7 @@ struct Index {
 
   // ----------------------------------------------------------------
 
-  /**
-   * @deprecated since 1.0.0
-   */
-  tabSelected(index: number) {
+  tabSelected(index: number): boolean {
     return this.currentTabIndex === index
   }
 
@@ -60,10 +57,10 @@ struct Index {
   @Builder
   barBuilder(index: number, icon: Resource, selectedIcon: Resource, title: string) {
     Column() {
-      Image((this.currentTabIndex === index) ? selectedIcon : icon)
+      Image(this.tabSelected(index) ? selectedIcon : icon)
         .tabIconStyle()
       Text(title)
-        .tabTitleStyle((this.currentTabIndex === index) ? Color.Black : '#959595')
+        .tabTitleStyle(this.tabSelected(index) ? Color.Black : '#959595')
     }
   }
 }
