@@ -1,6 +1,6 @@
 {
   "modelVersion": "5.0.0",
-  "description": "Please describe the basic information.",
+  "description": "Happy moment for word practice.",
   "dependencies": {
     "@ohos/axios": "^2.2.2"
   },

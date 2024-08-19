@@ -63,7 +63,8 @@ struct Login {
     })
 
     promptAction.showToast({
-      message: '打卡成功'
+      message: '打卡成功',
+      alignment: Alignment.Center
     })
 
     // 2.发送事件通知
@@ -152,7 +153,7 @@ struct Login {
       .formBackgroundStyle()
 
       Row({ space: 10 }) {
-        Image($r('app.media.ic_logo'))
+        Image($r("app.media.app_icon"))
           .width(36)
           .height(36)
         Text('快速记单词神器')
@@ -196,8 +197,8 @@ function backStyle() {
 function formBackgroundStyle() {
   .padding(30)
   .borderRadius(20)
-  //.backgroundColor(Color.White)
-  .backgroundColor(Color.Transparent)
+  .backgroundColor('#0d72fd0f')
+  // .backgroundColor(Color.Transparent)
 }
 
 @Extend(Text)

@@ -21,7 +21,7 @@ import { TOKEN_NAME } from '../constants/HappyConstants';
 
 // ----------------------------------------------------------------
 
-const BASE_URL: string = 'http://192.168.85.1:3000'
+const BASE_URL: string = 'http://192.168.1.7:3000'
 
 // ----------------------------------------------------------------
 
@@ -47,10 +47,15 @@ actor.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     // 若 token 存在,则将其添加到请求头
     config.headers[TOKEN_NAME] = token
   }
+
   return config;
 }, (error: AxiosError) => {
   // 若出现异常,则提示异常信息
-  promptAction.showToast({ message: error.message })
+  promptAction.showToast({
+    message: error.message,
+    alignment: Alignment.Center
+  })
+
   return Promise.reject(error);
 });
 
@@ -61,12 +66,20 @@ actor.interceptors.response.use((response: AxiosResponse) => {
     return response
   } else {
     // 若服务器返回的是异常数据,则提示异常信息
-    promptAction.showToast({ message: response.data.message })
+    promptAction.showToast({
+      message: response.data.message,
+      alignment: Alignment.Center
+    })
+
     return Promise.reject(response.data.message)
   }
 }, (error: AxiosError) => {
   // 若出现异常,则提示异常信息
-  promptAction.showToast({ message: error.message })
+  promptAction.showToast({
+    message: error.message,
+    alignment: Alignment.Center
+  })
+
   return Promise.reject(error);
 });
 
@@ -115,7 +128,7 @@ export function info() {
 }
 
 // 获取我的登录打卡记录
-export function getMyPost(query: IQuery) {
+export function myPosts(query: IQuery) {
   return actor.get<ApiResponse<IPosts>, AxiosResponse<ApiResponse<IPosts>>>('/word/post/getMine', {
     params: {
       page: query.page,

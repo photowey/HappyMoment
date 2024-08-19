@@ -2,15 +2,15 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "模块描述"
+      "value": "HappyMoment"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "HappyMoment"
     },
     {
       "name": "EntryAbility_label",
-      "value": "欢乐单词圈"
+      "value": "HappyMoment"
     }
   ]
 }

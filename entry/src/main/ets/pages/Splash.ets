@@ -49,7 +49,7 @@ struct Splash {
   build() {
     Column() {
       if (this.showLogo) {
-        Image($r('app.media.ic_logo'))
+        Image($r("app.media.ic_logo"))
           .logoStyle()
           .transition({
             type: TransitionType.Insert,
